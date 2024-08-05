@@ -31,7 +31,7 @@ class NotifListener: NotificationListenerService() {
 
         val pkgName = sbn?.packageName
 
-        if(pkgName == "id.dana") return
+        if(pkgName != "id.dana") return
 
         val key = sbn?.key
         if(pkgName == this.packageName) return
