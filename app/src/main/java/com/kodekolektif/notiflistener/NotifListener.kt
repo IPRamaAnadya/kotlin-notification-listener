@@ -31,6 +31,9 @@ class NotifListener: NotificationListenerService() {
 
         val pkgName = sbn?.packageName
 
+        if(pkgName == "id.dana") return
+
+        val key = sbn?.key
         if(pkgName == this.packageName) return
 
         val extras: Bundle? = sbn?.notification?.extras
@@ -46,6 +49,9 @@ class NotifListener: NotificationListenerService() {
 
         CoroutineScope(Dispatchers.IO).launch {
             db.notificationDao().insertNotification(notification)
+            if (key != null) {
+                removeNotifications(key)
+            }
         }
 
         // Broadcast the notification data
@@ -67,14 +73,10 @@ class NotifListener: NotificationListenerService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Toast.makeText(this, "Notification Listener Service Started", Toast.LENGTH_SHORT).show()
-        sendNotification("KodeKolektif", "Listen Notifiaction", "Notification Listener Service Started")
         return START_STICKY
     }
 
     override fun onDestroy() {
-        Toast.makeText(this, "Notification Listener Service Stopped", Toast.LENGTH_SHORT).show()
-        sendNotification("KodeKolektif", "Service Stopped!", "Notification Service Stopped by System")
         super.onDestroy()
     }
 
@@ -114,5 +116,9 @@ class NotifListener: NotificationListenerService() {
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(notificationId, builder.build())
+    }
+
+    private  fun removeNotifications(key: String) {
+        cancelNotification(key)
     }
 }

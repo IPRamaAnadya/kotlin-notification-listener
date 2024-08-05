@@ -22,6 +22,7 @@ class NotifAdapter(private val notifications: List<NotifEntity>) :
         holder.bodyTextView.text = notification.body
         holder.pkgTextView.text = notification.packageName
         holder.dateTextView.text = notification.createAt.toString()
+        holder.numberTextView.text = (notifications.size - position).toString()
     }
 
     override fun getItemCount() = notifications.size
@@ -31,5 +32,6 @@ class NotifAdapter(private val notifications: List<NotifEntity>) :
         val dateTextView: TextView = itemView.findViewById(R.id.notification_date)
         val titleTextView: TextView = itemView.findViewById(R.id.notification_title)
         val bodyTextView: TextView = itemView.findViewById(R.id.notification_body)
+        val numberTextView: TextView = itemView.findViewById(R.id.number)
     }
 }
