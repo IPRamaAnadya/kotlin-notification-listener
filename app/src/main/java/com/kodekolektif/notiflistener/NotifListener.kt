@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
@@ -29,22 +30,24 @@ class NotifListener: NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
 
-        val pkgName = sbn?.packageName
+        val pkgName = sbn!!.packageName as String
 
         if(pkgName != "id.dana") return
-
-        val key = sbn?.key
         if(pkgName == this.packageName) return
 
-        val extras: Bundle? = sbn?.notification?.extras
+        val key = sbn.key
+        val extras: Bundle? = sbn.notification?.extras
         val title = extras?.getString("android.title")
         val text = extras?.getString("android.text")
 
-        // Save the notification to the database
+        val nameAndNominal = extractInfo(text ?: "")
+
         val notification = NotifEntity(
-            packageName = pkgName ?: "",
+            packageName = pkgName,
             title = title ?: "",
-            body = text ?: ""
+            body = text ?: "",
+            name = nameAndNominal.first,
+            nominal = nameAndNominal.second
         )
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -120,5 +123,21 @@ class NotifListener: NotificationListenerService() {
 
     private  fun removeNotifications(key: String) {
         cancelNotification(key)
+    }
+
+    private fun extractInfo(description: String): Pair<String?, Int?> {
+        // Adjust regex to capture names with potential lowercase letters
+        val nameRegex = Regex("""Hei, ([A-Za-z\s]+) baru""")
+        // Adjust regex to handle comma as a decimal separator and optional dots
+        val priceRegex = Regex("""Rp([0-9,.]+)""")
+
+        val nameMatch = nameRegex.find(description)
+        val priceMatch = priceRegex.find(description)
+
+        val name = nameMatch?.groups?.get(1)?.value?.trim()
+        val price = priceMatch?.groups?.get(1)?.value
+            ?.replace(".", "")?.replace(",", "")?.toIntOrNull()
+
+        return Pair(name, price)
     }
 }

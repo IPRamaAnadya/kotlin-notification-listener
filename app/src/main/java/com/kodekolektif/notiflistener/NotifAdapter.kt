@@ -18,8 +18,8 @@ class NotifAdapter(private val notifications: List<NotifEntity>) :
 
     override fun onBindViewHolder(holder: NotifViewHolder, position: Int) {
         val notification = notifications[position]
-        holder.titleTextView.text = notification.title
-        holder.bodyTextView.text = notification.body
+        holder.titleTextView.text = notification.name
+        holder.bodyTextView.text = notification.nominal.toString()
         holder.pkgTextView.text = notification.packageName
         holder.dateTextView.text = notification.createAt.toString()
         holder.numberTextView.text = (notifications.size - position).toString()

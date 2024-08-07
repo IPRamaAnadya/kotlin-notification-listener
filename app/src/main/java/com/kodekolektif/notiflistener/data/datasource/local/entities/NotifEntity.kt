@@ -15,6 +15,12 @@ class NotifEntity(
     val title: String,
     @ColumnInfo(name = "body")
     val body: String,
+    @ColumnInfo(name = "name")
+    val name: String?,
+    @ColumnInfo(name = "nominal")
+    val nominal: Int?,
     @ColumnInfo(name = "created_at")
-    val createAt: Date = Date()
+    val createAt: Date = Date(),
+    @ColumnInfo(name = "validated_at")
+    val validatedAt: Date? = null
 )

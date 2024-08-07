@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import com.kodekolektif.notiflistener.data.datasource.local.dao.NotifDao
 import com.kodekolektif.notiflistener.data.datasource.local.entities.NotifEntity
 
-@Database(entities = [NotifEntity::class], version = 1)
+@Database(entities = [NotifEntity::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotifDao

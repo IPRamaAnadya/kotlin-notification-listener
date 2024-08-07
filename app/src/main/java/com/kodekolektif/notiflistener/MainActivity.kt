@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadNotifications() {
         lifecycleScope.launch {
             val notifications = withContext(Dispatchers.IO) {
-                notificationDao.getAllNotifications()
+                notificationDao.getAllNotificationsWithNonNullNameAndNominal()
             }
             notifAdapter = NotifAdapter(notifications)
             binding.notifList.adapter = notifAdapter
