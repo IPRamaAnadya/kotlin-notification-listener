@@ -1,4 +1,4 @@
-package com.kodekolektif.notiflistener
+package com.kodekolektif.notiflistener.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,15 +9,15 @@ import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.lifecycleScope
+import com.kodekolektif.notiflistener.R
 import com.kodekolektif.notiflistener.data.datasource.local.database.AppDatabase
 import com.kodekolektif.notiflistener.data.datasource.local.database.DatabaseInstance
 import com.kodekolektif.notiflistener.data.datasource.local.entities.NotifEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 class NotifListener: NotificationListenerService() {
 
@@ -25,6 +25,7 @@ class NotifListener: NotificationListenerService() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.e(className, "Service berjalan")
         db = DatabaseInstance.getDatabase(this)
     }
 
@@ -32,7 +33,9 @@ class NotifListener: NotificationListenerService() {
 
         val pkgName = sbn!!.packageName as String
 
-        if(pkgName != "id.dana") return
+        Log.e(className, "Mendapatkan notifikasi dari $pkgName")
+
+        if(!pkgName.contains("dana")) return
         if(pkgName == this.packageName) return
 
         val key = sbn.key
@@ -47,12 +50,15 @@ class NotifListener: NotificationListenerService() {
             title = title ?: "",
             body = text ?: "",
             name = nameAndNominal.first,
-            nominal = nameAndNominal.second
+            nominal = nameAndNominal.second,
+            uuid = UUID.randomUUID()
         )
+        Log.e(className, "Menyimpan notifikasi: $notification")
 
         CoroutineScope(Dispatchers.IO).launch {
             db.notificationDao().insertNotification(notification)
             if (key != null) {
+                Log.e(className, "Menghapus notifikasi: $key")
                 removeNotifications(key)
             }
         }
@@ -81,6 +87,7 @@ class NotifListener: NotificationListenerService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.e(className, "Service dihentikan")
     }
 
     private fun isAppInForeground(): Boolean {
@@ -139,5 +146,9 @@ class NotifListener: NotificationListenerService() {
             ?.replace(".", "")?.replace(",", "")?.toIntOrNull()
 
         return Pair(name, price)
+    }
+
+    companion object {
+        const val className = "NotifListener"
     }
 }

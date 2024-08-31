@@ -9,6 +9,8 @@ import java.util.*
 class NotifEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    @ColumnInfo(name = "uuid")
+    val uuid: UUID,
     @ColumnInfo(name = "package_name")
     val packageName: String,
     @ColumnInfo(name = "title")
@@ -22,5 +24,7 @@ class NotifEntity(
     @ColumnInfo(name = "created_at")
     val createAt: Date = Date(),
     @ColumnInfo(name = "validated_at")
-    val validatedAt: Date? = null
+    val validatedAt: Date? = null,
+    @ColumnInfo(name = "status")
+    val status: Int = 1
 )

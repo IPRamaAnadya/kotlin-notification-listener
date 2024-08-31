@@ -1,4 +1,4 @@
-package com.kodekolektif.notiflistener
+package com.kodekolektif.notiflistener.presentation.page
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -8,17 +8,26 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
+import com.kodekolektif.notiflistener.presentation.adapter.NotifAdapter
 import com.kodekolektif.notiflistener.data.datasource.local.dao.NotifDao
 import com.kodekolektif.notiflistener.data.datasource.local.database.AppDatabase
 import com.kodekolektif.notiflistener.data.datasource.local.database.DatabaseInstance
+import com.kodekolektif.notiflistener.data.datasource.local.entities.NotifEntity
+import com.kodekolektif.notiflistener.data.datasource.remote.model.Notif
 import com.kodekolektif.notiflistener.databinding.ActivityMainBinding
+import com.kodekolektif.notiflistener.presentation.viewmodel.NotifViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationDao: NotifDao
     private lateinit var binding: ActivityMainBinding
     private lateinit var notifAdapter: NotifAdapter
+
+    private val notifViewModel: NotifViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +49,14 @@ class MainActivity : AppCompatActivity() {
         setupNotificationReceiver()
         checkPermissions()
         loadNotifications()
+        postAllNotif()
+
+        binding.deleteAllNotif.setOnClickListener {
+            deleteAllNotif()
+        }
+    }
+
+    private fun postAllNotif() {
     }
 
     private fun initializeDatabase() {
@@ -107,6 +126,17 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
             putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
         })
+    }
+
+    private  fun deleteAllNotif() {
+        lifecycleScope.launch {
+            notificationDao.deleteAllNotifications()
+            val notifications = withContext(Dispatchers.IO) {
+                notificationDao.getAllNotificationsWithNonNullNameAndNominal()
+            }
+            notifAdapter = NotifAdapter(notifications)
+            binding.notifList.adapter = notifAdapter
+        }
     }
 
     override fun onDestroy() {
