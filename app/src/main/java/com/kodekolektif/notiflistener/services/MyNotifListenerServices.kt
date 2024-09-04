@@ -10,6 +10,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.kodekolektif.notiflistener.BuildConfig
 import com.kodekolektif.notiflistener.R
 import com.kodekolektif.notiflistener.data.datasource.local.database.AppDatabase
 import com.kodekolektif.notiflistener.data.datasource.local.database.DatabaseInstance
@@ -19,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
-class NotifListener: NotificationListenerService() {
+class MyNotifListenerServices: NotificationListenerService() {
 
     private lateinit var db: AppDatabase
 
@@ -29,13 +30,34 @@ class NotifListener: NotificationListenerService() {
         db = DatabaseInstance.getDatabase(this)
     }
 
+    override fun onListenerDisconnected() {
+        super.onListenerDisconnected()
+        Log.e(className, "Service Disconnected")
+    }
+
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+        Log.e(className, "Service Connected")
+    }
+
+    override fun revokeSelfPermissionOnKill(permName: String) {
+        super.revokeSelfPermissionOnKill(permName)
+        Log.e(className, "Service revokeSelfPermissionOnKill")
+    }
+
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
 
         val pkgName = sbn!!.packageName as String
 
+
         Log.e(className, "Mendapatkan notifikasi dari $pkgName")
 
-        if(!pkgName.contains("dana")) return
+        if (BuildConfig.DEBUG) {
+            if(!pkgName.contains("whatsapp")) return
+        } else {
+            if(!pkgName.contains("dana")) return
+        }
+
         if(pkgName == this.packageName) return
 
         val key = sbn.key

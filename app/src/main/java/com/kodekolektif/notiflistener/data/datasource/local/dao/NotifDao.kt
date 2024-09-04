@@ -21,7 +21,7 @@ interface NotifDao {
     @Query("SELECT * FROM notif WHERE name IS NOT NULL AND nominal IS NOT NULL AND nominal != 0 AND validated_at IS NULL ORDER BY created_at ASC")
     suspend fun getNotificationsWithNullValidateAt(): List<NotifEntity>
 
-    @Query("SELECT * FROM notif WHERE status = :status ORDER BY created_at DESC LIMIT 50")
+    @Query("SELECT * FROM notif WHERE status = :status AND name IS NOT NULL AND nominal IS NOT NULL AND nominal != 0 ORDER BY created_at DESC LIMIT 5")
     suspend fun getNotificationsByStatus(status: NotificationStatus): List<NotifEntity>
 
     @Query("DELETE FROM notif")

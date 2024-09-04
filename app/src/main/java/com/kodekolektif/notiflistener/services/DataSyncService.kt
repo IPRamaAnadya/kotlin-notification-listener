@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.kodekolektif.notiflistener.R
 import com.kodekolektif.notiflistener.data.datasource.local.dao.NotifDao
 import com.kodekolektif.notiflistener.data.datasource.local.database.DatabaseInstance
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit
 class DataSyncService : Service() {
 
     private val channelId = "DataSyncServiceChannel"
-    private val delayMillis = 1000L
+    private val delayMillis = 5000L
     private  val timeOut: Long = 10
 
     private lateinit var notifDao: NotifDao
@@ -52,6 +53,7 @@ class DataSyncService : Service() {
             writeTimeout(timeOut, TimeUnit.SECONDS)
             connectTimeout(timeOut, TimeUnit.SECONDS)
             addInterceptor(loggingInterceptor)
+            addInterceptor(ChuckerInterceptor(this@DataSyncService))
             addInterceptor { chain ->
                 var request = chain.request()
                 request = request.newBuilder()

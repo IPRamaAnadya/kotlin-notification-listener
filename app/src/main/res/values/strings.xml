@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Notif Listener</string>
-    <string name="service_name">Notif Listener Service</string>
+    <string name="service_name">My Notif Listener Service</string>
 </resources>
