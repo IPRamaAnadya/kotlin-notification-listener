@@ -2,6 +2,7 @@ package com.kodekolektif.core
 
 import android.app.Application
 import android.content.Intent
+import com.kodekolektif.notiflistener.BuildConfig
 import com.kodekolektif.notiflistener.di.apiModule
 import com.kodekolektif.notiflistener.di.globalModule
 import com.kodekolektif.notiflistener.di.databaseModule
@@ -22,8 +23,11 @@ class NotifListenerApp : Application() {
         val syncService = Intent(this, DataSyncService::class.java)
         val listenerService = Intent(this, MyNotifListenerServices::class.java)
 
-        stopService(syncService)
-        startService(syncService)
+        if (!BuildConfig.DEBUG) {
+            stopService(syncService)
+            startService(syncService)
+        }
+
         stopService(listenerService)
         startService(listenerService)
     }

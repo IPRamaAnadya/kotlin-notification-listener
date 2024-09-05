@@ -1,4 +1,4 @@
-package com.kodekolektif.notiflistener.utils
+package com.kodekolektif.core.utils
 
 sealed class Resource<T>(
     val data: T? = null,

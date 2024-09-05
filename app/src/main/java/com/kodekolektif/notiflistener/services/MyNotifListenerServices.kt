@@ -46,7 +46,7 @@ class MyNotifListenerServices: NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-
+        super.onNotificationPosted(sbn)
         val pkgName = sbn!!.packageName as String
 
 
@@ -95,8 +95,6 @@ class MyNotifListenerServices: NotificationListenerService() {
         if (!isAppInForeground()) {
             sendNotification(pkgName, title, text)
         }
-
-        super.onNotificationPosted(sbn)
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {

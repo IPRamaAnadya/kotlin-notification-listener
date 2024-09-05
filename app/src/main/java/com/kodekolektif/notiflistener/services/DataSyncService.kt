@@ -15,13 +15,12 @@ import com.kodekolektif.notiflistener.data.datasource.local.database.DatabaseIns
 import com.kodekolektif.notiflistener.data.datasource.local.entities.NotifEntity
 import com.kodekolektif.notiflistener.data.datasource.local.entities.NotificationStatus
 import com.kodekolektif.notiflistener.data.datasource.remote.api.ApiService
-import com.kodekolektif.notiflistener.utils.Constant
+import com.kodekolektif.core.utils.Constant
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class DataSyncService : Service() {

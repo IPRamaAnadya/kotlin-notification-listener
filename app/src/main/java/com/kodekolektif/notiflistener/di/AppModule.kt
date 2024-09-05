@@ -7,7 +7,7 @@ import com.kodekolektif.notiflistener.data.repository.NotifRepository
 import com.kodekolektif.notiflistener.data.repository.NotifRepositoryImpl
 import com.kodekolektif.notiflistener.domain.usecase.NotifUsecase
 import com.kodekolektif.notiflistener.presentation.viewmodel.NotifViewModel
-import com.kodekolektif.notiflistener.utils.Constant
+import com.kodekolektif.core.utils.Constant
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

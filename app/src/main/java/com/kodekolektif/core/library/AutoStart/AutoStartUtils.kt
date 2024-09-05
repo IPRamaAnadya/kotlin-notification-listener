@@ -1,4 +1,4 @@
-package com.kodekolektif.notiflistener.utils.AutoStart
+package com.kodekolektif.core.library.AutoStart
 
 import android.annotation.SuppressLint
 import android.text.TextUtils

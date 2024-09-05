@@ -23,8 +23,8 @@ import com.kodekolektif.notiflistener.data.datasource.local.entities.NotifEntity
 import com.kodekolektif.notiflistener.data.datasource.remote.model.Notif
 import com.kodekolektif.notiflistener.databinding.ActivityMainBinding
 import com.kodekolektif.notiflistener.presentation.viewmodel.NotifViewModel
-import com.kodekolektif.notiflistener.utils.AutoStart.Autostart
-import com.kodekolektif.notiflistener.utils.Constant
+import com.kodekolektif.core.library.AutoStart.Autostart
+import com.kodekolektif.core.utils.Constant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
