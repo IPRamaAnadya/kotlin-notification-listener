@@ -5,7 +5,8 @@ enum class NotificationStatus(val value: Int) {
     NOT_SEND(1),
     SUCCESS(2),
     FAILED(3),
-    WAITING(4);
+    WAITING(4),
+    UNKNOWN(5);
 
     companion object {
         fun fromInt(value: Int): NotificationStatus {

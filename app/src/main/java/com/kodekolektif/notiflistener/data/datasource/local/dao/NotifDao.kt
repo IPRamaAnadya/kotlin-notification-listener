@@ -30,7 +30,9 @@ interface NotifDao {
     @Query("DELETE FROM notif WHERE uuid IN (:uuids)")
     suspend fun deleteNotificationsByUuids(uuids: List<UUID>)
 
-    @Query("UPDATE notif SET status = :status WHERE uuid = :uuid")
+    @Query("UPDATE notif SET status = :status, validated_at = CURRENT_TIMESTAMP WHERE uuid = :uuid")
     suspend fun updateNotificationStatusByUuid(uuid: String, status: NotificationStatus)
 
+    @Query("SELECT uuid FROM notif WHERE status NOT IN (1, 4) ORDER BY created_at DESC LIMIT 50")
+    suspend fun getUuidsForNotificationsToDelete(): List<UUID>
 }

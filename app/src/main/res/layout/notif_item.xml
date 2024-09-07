@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:text="Hai"
+            android:text="NAMA"
             />
 
         <TextView
@@ -58,7 +58,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:text="Hai"/>
+            android:text="6000000"/>
+
+        <TextView
+            android:id="@+id/notification_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="Terkirim (Menunggu validasi)"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="10sp"
+            android:layout_marginTop="4dp"
+            android:text="tanggal sinkronisasi"/>
+
+        <TextView
+            android:id="@+id/notification_sync_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="10sp"
+            android:text="20 - 20 - 2024"/>
 
         <LinearLayout
             android:layout_width="match_parent"

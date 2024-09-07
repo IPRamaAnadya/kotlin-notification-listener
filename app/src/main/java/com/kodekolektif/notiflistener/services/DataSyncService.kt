@@ -1,81 +1,56 @@
 package com.kodekolektif.notiflistener.services
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.IBinder
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import com.chuckerteam.chucker.api.ChuckerInterceptor
-import com.kodekolektif.notiflistener.R
 import com.kodekolektif.notiflistener.data.datasource.local.dao.NotifDao
-import com.kodekolektif.notiflistener.data.datasource.local.database.DatabaseInstance
+import com.kodekolektif._core.database.DatabaseInstance
+import com.kodekolektif._core.manager.DeviceInfoManager
+import com.kodekolektif._core.network.ApiClient
+import com.kodekolektif._core.utils.Constant
 import com.kodekolektif.notiflistener.data.datasource.local.entities.NotifEntity
 import com.kodekolektif.notiflistener.data.datasource.local.entities.NotificationStatus
-import com.kodekolektif.notiflistener.data.datasource.remote.api.ApiService
-import com.kodekolektif.core.utils.Constant
+import com.kodekolektif.notiflistener.data.datasource.remote.api.NotificationApiServices
+import com.kodekolektif.notiflistener.utils.AppNotificationManager
 import kotlinx.coroutines.*
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 class DataSyncService : Service() {
 
-    private val channelId = "DataSyncServiceChannel"
-    private val delayMillis = 5000L
-    private  val timeOut: Long = 10
+    private val delayMillis = 15000L
 
     private lateinit var notifDao: NotifDao
-    private lateinit var apiService: ApiService
+    private lateinit var apiService: NotificationApiServices
+    private lateinit var notificationManager: AppNotificationManager
+    private lateinit var deviceInfoManager: DeviceInfoManager
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate() {
         super.onCreate()
 
         Log.e(className, "Service berjalan")
 
-        createNotificationChannel()
-
         // Initialize the DAO
         notifDao = DatabaseInstance.getDatabase(this).notificationDao()
 
-        // Create a logging interceptor to log every request and response
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // Set the desired logging level
-        }
-
-        val okHttpClient = OkHttpClient.Builder().apply {
-            readTimeout(timeOut, TimeUnit.SECONDS)
-            writeTimeout(timeOut, TimeUnit.SECONDS)
-            connectTimeout(timeOut, TimeUnit.SECONDS)
-            addInterceptor(loggingInterceptor)
-            addInterceptor(ChuckerInterceptor(this@DataSyncService))
-            addInterceptor { chain ->
-                var request = chain.request()
-                request = request.newBuilder()
-                    .build()
-                val response = chain.proceed(request)
-                response
-            }
-        }
-            .build()
-
-        // Initialize Retrofit with the OkHttpClient
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Constant.apiUrl)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
         // Create the API service
-        apiService = retrofit.create(ApiService::class.java)
+        apiService = ApiClient.init().create(NotificationApiServices::class.java)
+
+        // Create the notification manager
+        notificationManager = AppNotificationManager(this)
+        notificationManager.createNotificationChannel()
+
+        // Create the shared preferences
+        sharedPreferences = getSharedPreferences(Constant.sharedPref, MODE_PRIVATE)
+
+        // Create the device info manager
+        deviceInfoManager = DeviceInfoManager(sharedPreferences)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(1, createNotification())
+
+        notificationManager.sendNotification(1, "Data Sync Service", "Synchronizing data with server...")
 
         // Start the data synchronization process
         CoroutineScope(Dispatchers.IO).launch {
@@ -89,31 +64,13 @@ class DataSyncService : Service() {
         return null
     }
 
-    private fun createNotification(): Notification {
-        return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Data Sync Service")
-            .setContentText("Synchronizing data with server...")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .build()
-    }
-
-    private fun createNotificationChannel() {
-        val serviceChannel = NotificationChannel(
-            channelId,
-            "Data Sync Service Channel",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(serviceChannel)
-    }
-
     private suspend fun syncDataContinuously() {
         while (true) {
             val dataToSync = getDataFromRoom()
             if (dataToSync.isNotEmpty()) {
                 val synchronizedData = sendDataToServer(dataToSync)
                 if (synchronizedData.isNotEmpty()) {
-                    deleteSyncDatas(synchronizedData)
+                    updateSyncDatas(synchronizedData)
                 } else {
                     Log.e(className, "Tidak ada data yang tersingkronisasi")
                 }
@@ -125,25 +82,42 @@ class DataSyncService : Service() {
     }
 
     private suspend fun getDataFromRoom(): List<NotifEntity> {
-        return notifDao.getNotificationsByStatus(status = NotificationStatus.NOT_SEND)
+        val newNotif = notifDao.getNotificationsByStatus(status = NotificationStatus.NOT_SEND)
+        val notYetValidateNotif = notifDao.getNotificationsByStatus(status = NotificationStatus.WAITING)
+
+        return newNotif + notYetValidateNotif
     }
 
     private suspend fun sendDataToServer(data: List<NotifEntity>): List<NotifEntity> {
         try {
-            return apiService.syncData(data)
+            val response =  apiService.syncData(data,
+                deviceName = deviceInfoManager.deviceName(),
+                deviceSerialNumber = deviceInfoManager.serialNumber()
+            )
+            if (response.isSuccessful) {
+                deviceInfoManager.saveDeviceStatus(2)
+                return response.body() ?: emptyList()
+            } else {
+                Log.e(className, response.errorBody()?.string() ?: "Error")
+                return emptyList()
+            }
         } catch (e: java.lang.Exception) {
             Log.e(className, e.localizedMessage)
             return  emptyList()
         }
     }
 
-    private  suspend fun deleteSyncDatas(datas: List<NotifEntity>) {
+    private  suspend fun updateSyncDatas(datas: List<NotifEntity>) {
         datas.forEach {
-            notifDao.updateNotificationStatusByUuid(it.uuid.toString(), NotificationStatus.fromInt(2))
+            notifDao.updateNotificationStatusByUuid(it.uuid.toString(), NotificationStatus.fromInt(it.status))
         }
+
+        val intent = Intent(ACTION_SYNC_SUCCESS)
+        sendBroadcast(intent)
     }
 
     companion object {
+        const val ACTION_SYNC_SUCCESS = "com.kodekolektif.notiflistener.ACTION_SYNC_SUCCESS"
         const val className = "DataSyncService"
     }
 }
