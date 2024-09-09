@@ -1,14 +1,17 @@
 package com.kodekolektif.auth.presentation.page
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.kodekolektif._core.manager.DeviceInfoManager
 import com.kodekolektif._core.network.NetworkResult
+import com.kodekolektif._core.utils.Constant
 import com.kodekolektif.auth.presentation.viewmodel.AuthViewModel
 import com.kodekolektif.notiflistener.databinding.ActivityLoginBinding // Import the generated binding class
 import com.kodekolektif.notiflistener.presentation.page.MainActivity
@@ -21,6 +24,7 @@ class LoginActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModel()
     private lateinit var binding: ActivityLoginBinding // Declare the binding variable
     private val deviceInfoManager: DeviceInfoManager by inject()
+    private val sharedPreferences: SharedPreferences by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun initViews() {
         setupActionBar()
-
+        setBaseUrl(null)
         binding.btnLogin.setOnClickListener {
             login()
         }
@@ -54,10 +58,48 @@ class LoginActivity : AppCompatActivity() {
                finish()
            }
         }
+        binding.etBaseUrl.setOnKeyListener { _, _, _ ->
+            updateApiUrlPreview()
+            false
+        }
+        binding.btnSaveBaseUrl.setOnClickListener {
+            val baseUrl = binding.etBaseUrl.text.toString()
+            saveBaseUrl(baseUrl)
+        }
+    }
+
+    private fun updateApiUrlPreview() {
+        val baseUrl = binding.etBaseUrl.text.toString()
+        binding.tvBaseUrl.text = baseUrl + Constant.apiVersion
+    }
+
+    private fun setBaseUrl(text: String?) {
+        binding.tvBaseUrl.text = (text ?: getBaseUrl()) + Constant.apiVersion
+        binding.etBaseUrl.setText(text ?: getBaseUrl())
+        Log.e(TAG, "Base Url: ${binding.tvBaseUrl.text}")
+    }
+
+    private fun getBaseUrl(): String {
+        val baseUrl = if(sharedPreferences.getString(Constant.baseUrlKey, Constant.baseUrl) == "" || sharedPreferences.getString(Constant.baseUrlKey, Constant.baseUrl) == null) {
+            Constant.baseUrl
+        } else {
+            sharedPreferences.getString(Constant.baseUrlKey, Constant.baseUrl)
+        }
+        return baseUrl ?: ""
+    }
+
+    private fun saveBaseUrl(text: String) {
+        with (sharedPreferences.edit()) {
+            putString(Constant.baseUrlKey, text)
+            apply()
+        }
+        DialogManager.showAlertDialog(this, "Berhasil", "Base URL berhasil diubah. Harap restart aplikasi untuk menerapkan perubahan") {
+            finish()
+        }
     }
 
     private fun setupActionBar() {
-        supportActionBar?.title = "Login"
+        supportActionBar?.title = "Request access"
     }
 
     private fun login() {
@@ -72,26 +114,26 @@ class LoginActivity : AppCompatActivity() {
             when (result) {
                 is NetworkResult.Loading -> {
                     // Handle loading
-                    Log.e(TAG, "Login loading")
+                    Log.e(TAG, "Request access loading")
                     binding.btnLogin.text = "Loading..." // Change button text to indicate loading
                     binding.btnLogin.isEnabled = false // Disable the button while loading
                 }
                 is NetworkResult.Success -> {
                     // Handle successful login
                     val loginResponse = result.data
-                    Log.e(TAG, "Login success: $loginResponse")
-                    binding.btnLogin.text = "Login" // Reset button text
+                    Log.e(TAG, "Request access success: $loginResponse")
+                    binding.btnLogin.text = "Request access" // Reset button text
                     binding.btnLogin.isEnabled = true // Re-enable the button
                     // check if user status is active (2)
                     deviceInfoManager.saveDeviceStatus(loginResponse?.user?.status ?: 0)
                     if (loginResponse?.user?.status == 2) {
-                        DialogManager.showAlertDialog(this, "Login berhasil", "Welcome, ${loginResponse.user.name}") {
+                        DialogManager.showAlertDialog(this, "Request access berhasil", "Halo, ${loginResponse.user.name}") {
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                             finish()
                         }
                     } else {
-                        DialogManager.showAlertDialog(this, "Login berhasil", "Status device pending. Silahkan hubungi admin agar device dapat menyingkronkan data.") {
+                        DialogManager.showAlertDialog(this, "Request access berhasil", "Status device pending. Silahkan hubungi admin agar device dapat menyingkronkan data.") {
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                             finish()
@@ -101,26 +143,26 @@ class LoginActivity : AppCompatActivity() {
                 is NetworkResult.Error -> {
                     // Handle error
                     val error = result.errorMessage
-                    Log.e(TAG, "Login error: $error")
-                    binding.btnLogin.text = "Login" // Reset button text
+                    Log.e(TAG, "Request access error: $error")
+                    binding.btnLogin.text = "Request access" // Reset button text
                     binding.btnLogin.isEnabled = true // Re-enable the button
-                    DialogManager.showAlertDialog(this, "Login error", error)
+                    DialogManager.showAlertDialog(this, "Request access error", error)
                 }
                 NetworkResult.Empty -> {
-                    Log.e(TAG, "Login empty")
-                    binding.btnLogin.text = "Login" // Reset button text
+                    Log.e(TAG, "Request access empty")
+                    binding.btnLogin.text = "Request access" // Reset button text
                     binding.btnLogin.isEnabled = true // Re-enable the button
-                    DialogManager.showAlertDialog(this, "Login error", "Empty response")
+                    DialogManager.showAlertDialog(this, "Request access error", "Empty response")
                 }
                 NetworkResult.NetworkError -> {
                     Log.e(TAG, "Network error")
-                    binding.btnLogin.text = "Login" // Reset button text
+                    binding.btnLogin.text = "Request access" // Reset button text
                     binding.btnLogin.isEnabled = true // Re-enable the button
                     DialogManager.showAlertDialog(this, "Network error", "Please check your internet connection")
                 }
                 NetworkResult.TimeoutError -> {
                     Log.e(TAG, "Timeout error")
-                    binding.btnLogin.text = "Login" // Reset button text
+                    binding.btnLogin.text = "Request access" // Reset button text
                     binding.btnLogin.isEnabled = true // Re-enable the button
                     DialogManager.showAlertDialog(this, "Timeout error", "Request timeout. Please try again")
                 }
