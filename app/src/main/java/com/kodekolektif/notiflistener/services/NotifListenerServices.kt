@@ -137,15 +137,24 @@ class NotifListenerServices: NotificationListenerService() {
     }
 
     private fun extractInfo(description: String): Pair<String?, Int?> {
-        // Adjust regex to capture names with potential lowercase letters
-        val nameRegex = Regex("""Hei, ([A-Za-z\s]+) baru""")
-        // Adjust regex to handle comma as a decimal separator and optional dots
+        // Regex untuk format pertama: "Hei, [Nama] baru saja mengirim DANA ke kamu Rp[Nominal]"
+        val nameRegex1 = Regex("""Hei, ([A-Za-z\s]+) baru""")
+        // Regex untuk format kedua: "Kamu menerima Rp[Nominal] dari [Nama] dengan biaya admin"
+        val nameRegex2 = Regex("""dari ([A-Za-z\s]+) dengan""")
+
+        // Regex untuk menangkap nominal, dapat menangani koma sebagai pemisah desimal dan titik sebagai pemisah ribuan
         val priceRegex = Regex("""Rp([0-9,.]+)""")
 
-        val nameMatch = nameRegex.find(description)
+        // Mencoba mencocokkan deskripsi dengan kedua format regex
+        val nameMatch1 = nameRegex1.find(description)
+        val nameMatch2 = nameRegex2.find(description)
         val priceMatch = priceRegex.find(description)
 
-        val name = nameMatch?.groups?.get(1)?.value?.trim()
+        // Mendapatkan nama dari salah satu regex yang sesuai
+        val name = nameMatch1?.groups?.get(1)?.value?.trim()
+            ?: nameMatch2?.groups?.get(1)?.value?.trim()
+
+        // Mengonversi nominal ke integer, membersihkan format angka
         val price = priceMatch?.groups?.get(1)?.value
             ?.replace(".", "")?.replace(",", "")?.toIntOrNull()
 

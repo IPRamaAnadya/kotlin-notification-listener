@@ -30,7 +30,7 @@ val managerModule = module {
 }
 
 val networkModule = module {
-    single { ApiClient.init() }
+    single { ApiClient.init(androidContext()) }
     single { get<Retrofit>().create(NotificationApiServices::class.java) }
     single { get<Retrofit>().create(AuthApiServices::class.java) }
     single<ErrorHandler> { ErrorHandler() }

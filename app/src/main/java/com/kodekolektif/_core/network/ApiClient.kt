@@ -1,7 +1,9 @@
 package com.kodekolektif._core.network
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.kodekolektif._core.utils.Constant
 import com.kodekolektif.notiflistener.BuildConfig
 import okhttp3.OkHttpClient
@@ -26,7 +28,7 @@ object ApiClient : KoinComponent {
         return baseUrl + Constant.apiVersion
     }
 
-    fun init(): Retrofit {
+    fun init(context: Context): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
@@ -40,6 +42,9 @@ object ApiClient : KoinComponent {
             writeTimeout(Constant.requestTimeout, TimeUnit.SECONDS)
             connectTimeout(Constant.requestTimeout, TimeUnit.SECONDS)
             addInterceptor(loggingInterceptor)
+            if (BuildConfig.DEBUG) {
+                addInterceptor(ChuckerInterceptor(context))
+            }
             addInterceptor { chain ->
                 var request = chain.request()
                 request = request.newBuilder().build()

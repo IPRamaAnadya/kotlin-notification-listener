@@ -35,7 +35,7 @@ class DataSyncService : Service() {
         notifDao = DatabaseInstance.getDatabase(this).notificationDao()
 
         // Create the API service
-        apiService = ApiClient.init().create(NotificationApiServices::class.java)
+        apiService = ApiClient.init(this).create(NotificationApiServices::class.java)
 
         // Create the notification manager
         notificationManager = AppNotificationManager(this)
@@ -69,6 +69,7 @@ class DataSyncService : Service() {
             val dataToSync = getDataFromRoom()
             if (dataToSync.isNotEmpty()) {
                 val synchronizedData = sendDataToServer(dataToSync)
+                Log.e(className, "Data yang berhasil disingkronkan: ${synchronizedData.size}")
                 if (synchronizedData.isNotEmpty()) {
                     updateSyncDatas(synchronizedData)
                 } else {
@@ -109,6 +110,7 @@ class DataSyncService : Service() {
 
     private  suspend fun updateSyncDatas(datas: List<NotifEntity>) {
         datas.forEach {
+            Log.e(className, "Update status notifikasi: ${it.uuid} ke ${it.status}")
             notifDao.updateNotificationStatusByUuid(it.uuid.toString(), NotificationStatus.fromInt(it.status))
         }
 
