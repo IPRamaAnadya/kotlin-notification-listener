@@ -96,6 +96,10 @@ class MonitoringServicesActivity : AppCompatActivity() {
             stopService(Intent(this, DataSyncService::class.java))
             checkServiceStatus()
         }
+
+        binding.btnTest2.setOnClickListener {
+            DialogManager.showAlertDialog(this, "Alert!", "Fitur belum tersedia")
+        }
     }
 
     // set action for service 3
@@ -108,6 +112,10 @@ class MonitoringServicesActivity : AppCompatActivity() {
         binding.btnStopService3.setOnClickListener {
             stopService(Intent(this, DataCleanupService::class.java))
             checkServiceStatus()
+        }
+
+        binding.btnTest3.setOnClickListener {
+            DialogManager.showAlertDialog(this, "Alert!", "Fitur belum tersedia")
         }
     }
 
