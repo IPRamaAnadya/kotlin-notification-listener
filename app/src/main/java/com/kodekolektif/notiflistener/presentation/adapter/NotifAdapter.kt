@@ -24,7 +24,12 @@ class NotifAdapter(private val notifications: List<NotifEntity>) :
         holder.pkgTextView.text = notification.packageName
         holder.dateTextView.text = notification.createAt.toString()
         holder.numberTextView.text = (notifications.size - position).toString()
-        holder.syncDateTextView.text = notification.validatedAt.toString()
+        holder.syncDateTextView.text = if (notification.validatedAt != null) {
+            notification.validatedAt.toString()
+        } else {
+            "-"
+        }
+
         when (notification.status) {
             1 -> {
                 holder.statusTextView.text = "Belum terkirim"
@@ -42,7 +47,7 @@ class NotifAdapter(private val notifications: List<NotifEntity>) :
                 holder.statusTextView.setTextColor(0xFFF44336.toInt())
             }
             4 -> {
-                holder.statusTextView.text = "Terkirim (Menunggu validasi"
+                holder.statusTextView.text = "Terkirim (Menunggu validasi)"
                 // set color orange from hex
                 holder.statusTextView.setTextColor(0xFFFF9800.toInt())
             }
