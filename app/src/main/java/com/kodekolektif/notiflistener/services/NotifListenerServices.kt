@@ -59,7 +59,7 @@ class NotifListenerServices: NotificationListenerService() {
         Log.e(className, "Mendapatkan notifikasi dari $pkgName")
 
         if (BuildConfig.DEBUG) {
-            if(!pkgName.contains("whatsapp")) return
+            if(!(pkgName.contains("whatsapp") || pkgName.contains("dana"))) return
         } else {
             if(!pkgName.contains("dana")) return
         }
