@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.content.*
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -17,7 +19,9 @@ import com.kodekolektif.notiflistener.databinding.ActivityMainBinding
 import com.kodekolektif.notiflistener.presentation.viewmodel.NotifViewModel
 import com.kodekolektif._core.library.AutoStart.Autostart
 import com.kodekolektif._core.manager.PermissionManager
+import com.kodekolektif.monitoringservices.presentation.page.MonitoringServicesActivity
 import com.kodekolektif.notiflistener.BuildConfig
+import com.kodekolektif.notiflistener.R
 import com.kodekolektif.notiflistener.services.DataCleanupService
 import com.kodekolektif.notiflistener.services.DataSyncService
 import com.kodekolektif.notiflistener.services.NotifListenerServices
@@ -131,5 +135,22 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         unregisterReceiver(notificationReceiver)
         unregisterReceiver(syncReceiver)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_monitoring -> {
+                // Move to Monitoring page
+                val intent = Intent(this, MonitoringServicesActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

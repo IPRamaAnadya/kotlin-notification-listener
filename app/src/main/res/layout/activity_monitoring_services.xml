@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.kodekolektif.monitoringservices.presentation.page.MonitoringServicesActivity">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:padding="16dp">
+        <!-- Service title -->
+        <TextView
+            android:id="@+id/tv_service__title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Notification collector Services"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAlignment="textStart"
+            />
+        <!-- status -->
+        <TextView
+            android:id="@+id/tv_service_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Service Status: Berjalan"
+            android:textSize="12sp"
+            />
+        <!-- Button start service, stop -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btn_start_service"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/btn_stop_service"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/btn_test"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Test"
+                android:layout_weight="1"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:padding="16dp">
+        <!-- Service title -->
+        <TextView
+            android:id="@+id/tv_service__title2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Sync Data Services"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAlignment="textStart"
+            />
+        <!-- status -->
+        <TextView
+            android:id="@+id/tv_service_status2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Service Status: Berjalan"
+            android:textSize="12sp"
+            />
+        <!-- Button start service, stop -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btn_start_service2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/btn_stop_service2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/btn_test2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Test"
+                android:layout_weight="1"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:padding="16dp">
+        <!-- Service title -->
+        <TextView
+            android:id="@+id/tv_service__title3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Data cleaning Services"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAlignment="textStart"
+            />
+        <!-- status -->
+        <TextView
+            android:id="@+id/tv_service_status3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Service Status: Berjalan"
+            android:textSize="12sp"
+            />
+        <!-- Button start service, stop -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btn_start_service3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/btn_stop_service3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/btn_test3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Test"
+                android:layout_weight="1"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

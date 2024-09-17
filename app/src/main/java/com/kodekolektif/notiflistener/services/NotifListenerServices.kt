@@ -58,6 +58,10 @@ class NotifListenerServices: NotificationListenerService() {
 
         Log.e(className, "Mendapatkan notifikasi dari $pkgName")
 
+        if (pkgName == this.packageName) {
+            handleTestNotification(sbn)
+        }
+
         if (BuildConfig.DEBUG) {
             if(!(pkgName.contains("whatsapp") || pkgName.contains("dana"))) return
         } else {
@@ -159,6 +163,11 @@ class NotifListenerServices: NotificationListenerService() {
             ?.replace(".", "")?.replace(",", "")?.toIntOrNull()
 
         return Pair(name, price)
+    }
+
+    private fun handleTestNotification(sbn: StatusBarNotification) {
+        val intent = Intent("com.kodekolektif.notiflistener.NOTIFICATION_LISTENER_TEST")
+        sendBroadcast(intent)
     }
 
     companion object {
