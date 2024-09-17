@@ -18,8 +18,6 @@ import kotlinx.coroutines.*
 
 class DataSyncService : Service() {
 
-    private val delayMillis = 15000L
-
     private lateinit var notifDao: NotifDao
     private lateinit var apiService: NotificationApiServices
     private lateinit var notificationManager: AppNotificationManager
@@ -78,7 +76,7 @@ class DataSyncService : Service() {
             } else{
                 Log.e(className, "Tidak ada data yang harus disingkronkan")
             }
-            delay(delayMillis)
+            delay(Constant.notifSyncInterval)
         }
     }
 

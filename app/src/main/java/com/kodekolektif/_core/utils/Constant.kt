@@ -9,6 +9,8 @@ object Constant {
 
     // VALUE
     const val requestTimeout = 10L
+    const val notifSyncLimit = 10
+    const val notifSyncInterval = 3000L
 
 
     // KEY
